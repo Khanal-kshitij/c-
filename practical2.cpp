@@ -1,23 +1,30 @@
 #include <iostream>
-#include <set>
 using namespace std;
 
-void removeDuplicates(int arr[], int n) {
-    // Create a set from array elements (automatically removes duplicates)
-    set<int> uniqueElements(arr, arr + n);
-
-    // Copy unique elements back to array
-    int i = 0;
-    for (int element : uniqueElements) {
-        arr[i++] = element;
+// Function to remove duplicates and return new size
+int removeDuplicates(int arr[], int n) {
+    if (n == 0 || n == 1) {
+        return n;  // No duplicates possible
     }
 
-    // Print the result
-    cout << "Array after removing duplicates: ";
-    for (int j = 0; j < uniqueElements.size(); j++) {
-        cout << arr[j] << " ";
+    // Temporary array to store unique elements
+    int temp[n];
+    int j = 0;  // Index for temp array
+
+    // Traverse the array and keep unique elements
+    for (int i = 0; i < n - 1; i++) {
+        if (arr[i] != arr[i + 1]) {
+            temp[j++] = arr[i];
+        }
     }
-    cout << endl;
+    temp[j++] = arr[n - 1];  // Add the last element
+
+    // Copy unique elements back to original array
+    for (int i = 0; i < j; i++) {
+        arr[i] = temp[i];
+    }
+
+    return j;  // Return new size
 }
 
 int main() {
@@ -26,7 +33,7 @@ int main() {
     cin >> n;
 
     int arr[n];
-    cout << "Enter " << n << " elements: ";
+    cout << "Enter " << n << " elements (sorted order): ";
     for (int i = 0; i < n; i++) {
         cin >> arr[i];
     }
@@ -37,7 +44,14 @@ int main() {
     }
     cout << endl;
 
-    removeDuplicates(arr, n);
+    // Note: This method assumes array is sorted
+    int newSize = removeDuplicates(arr, n);
+
+    cout << "Array after removing duplicates: ";
+    for (int i = 0; i < newSize; i++) {
+        cout << arr[i] << " ";
+    }
+    cout << endl;
 
     return 0;
 }
