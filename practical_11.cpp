@@ -13,15 +13,15 @@ private:
     double totalMarks;
 
 public:
-    // Constructor
+    
     Student(int r = 0, string n = "", string c = "", int y = 0, double m = 0.0)
         : rollNo(r), name(n), className(c), year(y), totalMarks(m) {}
 
-    // Input method
+    
     void input() {
         cout << "Enter Roll No.: ";
         cin >> rollNo;
-        cin.ignore(); // Clear buffer
+        cin.ignore(); 
         cout << "Enter Name: ";
         getline(cin, name);
         cout << "Enter Class: ";
