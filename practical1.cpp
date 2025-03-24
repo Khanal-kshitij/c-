@@ -4,7 +4,6 @@
 
 using namespace std;
 
-// Function to compute the series sum
 double computeSeriesSum(int n) {
     double sum = 0.0;
     int sign = 1;  // To alternate between + and -
