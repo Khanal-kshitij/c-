@@ -1,7 +1,7 @@
 #include <iostream>
 using namespace std;
 
-// Function to calculate string length using pointers
+
 int length(char* str) {
     int len = 0;
     while (*str != '\0') {
@@ -11,7 +11,7 @@ int length(char* str) {
     return len;
 }
 
-// Function to show address of each character
+
 void showAddress(char* str) {
     cout << "Address of each character in string:\n";
     while (*str != '\0') {
@@ -20,7 +20,7 @@ void showAddress(char* str) {
     }
 }
 
-// Function to concatenate two strings
+
 void concatenate(char* str1, char* str2) {
     char* temp = str1;
     while (*temp != '\0') {
@@ -34,29 +34,29 @@ void concatenate(char* str1, char* str2) {
     *temp = '\0';
 }
 
-// Function to compare two strings
+
 int compare(char* str1, char* str2) {
     while (*str1 != '\0' && *str2 != '\0') {
         if (*str1 != *str2) {
-            return *str1 - *str2; // Return difference if characters differ
+            return *str1 - *str2; 
         }
         str1++;
         str2++;
     }
-    return length(str1) - length(str2); // If one is prefix of other
+    return length(str1) - length(str2); 
 }
 
-// Function to convert lowercase to uppercase
+
 void toUppercase(char* str) {
     while (*str != '\0') {
         if (*str >= 'a' && *str <= 'z') {
-            *str = *str - 32; // ASCII difference between lowercase and uppercase
+            *str = *str - 32; 
         }
         str++;
     }
 }
 
-// Function to reverse a string
+
 void reverse(char* str) {
     int len = length(str);
     char* start = str;
@@ -70,7 +70,7 @@ void reverse(char* str) {
     }
 }
 
-// Function to insert one string into another at a position
+
 void insertString(char* mainStr, char* insertStr, int pos) {
     int mainLen = length(mainStr);
     int insertLen = length(insertStr);
@@ -80,7 +80,7 @@ void insertString(char* mainStr, char* insertStr, int pos) {
         return;
     }
 
-    // Shift characters to make space
+    
     char temp[100]; // Temporary buffer (assumes max length)
     char* src = mainStr + mainLen;
     char* dest = src + insertLen;
@@ -90,7 +90,7 @@ void insertString(char* mainStr, char* insertStr, int pos) {
         dest--;
     }
 
-    // Insert the string
+    
     src = insertStr;
     dest = mainStr + pos;
     while (*src != '\0') {
@@ -119,7 +119,7 @@ int main() {
         cout << "8. Exit\n";
         cout << "Enter your choice: ";
         cin >> choice;
-        cin.ignore(); // Clear buffer
+        cin.ignore(); 
 
         switch (choice) {
             case 1:
