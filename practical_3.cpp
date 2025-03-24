@@ -1,19 +1,19 @@
 #include <iostream>
-#include <cctype> // For tolower() and isalpha()
+#include <cctype> 
 using namespace std;
 
-// Function to count occurrences of each alphabet
+
 void countAlphabets(char* text, int counts[]) {
     while (*text) { // Continue until null terminator
         char c = tolower(*text);
         if (isalpha(c)) {
             counts[c - 'a']++;
         }
-        text++; // Move to next character
+        text++; 
     }
 }
 
-// Function to print the table
+
 void printTable(int counts[]) {
     cout << "Alphabet Occurrence Table:\n";
     cout << "-------------------------\n";
@@ -35,9 +35,9 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-    int counts[26] = {0}; // Array to store counts for a-z
+    int counts[26] = {0}; 
 
-    // Process all arguments starting from argv[1]
+    
     for (int i = 1; i < argc; i++) {
         countAlphabets(argv[i], counts);
     }
