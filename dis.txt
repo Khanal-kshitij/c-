@@ -1,0 +1,402 @@
+1.from itertools import chain, combinations, product
+
+class SET:
+    def __init__(self, elements=None):
+        self.elements = set(elements) if elements else set()
+
+    def is_member(self, element):
+        return element in self.elements
+
+    def power_set(self):
+        s = list(self.elements)
+        return list(chain.from_iterable(combinations(s, r) for r in range(len(s) + 1)))
+
+    def is_subset(self, other_set):
+        return self.elements.issubset(other_set.elements)
+
+    def union(self, other_set):
+        return SET(self.elements.union(other_set.elements))
+
+    def intersection(self, other_set):
+        return SET(self.elements.intersection(other_set.elements))
+
+    def complement(self, universal_set):
+        return SET(universal_set.elements - self.elements)
+
+    def difference(self, other_set):
+        return SET(self.elements.difference(other_set.elements))
+
+    def symmetric_difference(self, other_set):
+        return SET(self.elements.symmetric_difference(other_set.elements))
+
+    def cartesian_product(self, other_set):
+        return list(product(self.elements, other_set.elements))
+
+    def __str__(self):
+        return "{" + ", ".join(map(str, self.elements)) + "}"
+
+
+def get_set_input(prompt):
+    elements = input(prompt).split()
+    return SET(elements)
+
+
+def menu():
+    print("\nSet Operations Menu:")
+    print("1. Check Membership")
+    print("2. Power Set")
+    print("3. Subset Check")
+    print("4. Union")
+    print("5. Intersection")
+    print("6. Complement")
+    print("7. Set Difference")
+    print("8. Symmetric Difference")
+    print("9. Cartesian Product")
+    print("0. Exit")
+
+
+if __name__ == "__main__":
+    print("Enter elements of Set A (space-separated):")
+    A = get_set_input("Set A: ")
+
+    print("Enter elements of Set B (space-separated):")
+    B = get_set_input("Set B: ")
+
+    universal = get_set_input("Enter elements of Universal Set (space-separated):")
+
+    while True:
+        menu()
+        choice = input("Enter your choice: ")
+
+        if choice == '1':
+            elem = input("Enter element to check in Set A: ")
+            print("Present in Set A?" , A.is_member(elem))
+
+        elif choice == '2':
+            print("Power set of Set A:")
+            for subset in A.power_set():
+                print(set(subset))
+
+        elif choice == '3':
+            print("Is A subset of B?", A.is_subset(B))
+            print("Is B subset of A?", B.is_subset(A))
+
+        elif choice == '4':
+            print("Union of A and B:", A.union(B))
+
+        elif choice == '5':
+            print("Intersection of A and B:", A.intersection(B))
+
+        elif choice == '6':
+            print("Complement of A:", A.complement(universal))
+            print("Complement of B:", B.complement(universal))
+
+        elif choice == '7':
+            print("A - B:", A.difference(B))
+            print("B - A:", B.difference(A))
+
+        elif choice == '8':
+            print("Symmetric Difference between A and B:", A.symmetric_difference(B))
+
+        elif choice == '9':
+            print("Cartesian Product of A × B:", A.cartesian_product(B))
+
+        elif choice == '0':
+            print("Exiting...")
+            break
+
+        else:
+            print("Invalid choice. Try again.")
+
+2.
+class RELATION:
+    def __init__(self, set_elements, relation_pairs):
+        self.set_elements = list(set_elements)
+        self.n = len(self.set_elements)
+        self.index = {elem: i for i, elem in enumerate(self.set_elements)}
+        self.matrix = [[0]*self.n for _ in range(self.n)]
+        for a, b in relation_pairs:
+            i, j = self.index[a], self.index[b]
+            self.matrix[i][j] = 1
+
+    def display_matrix(self):
+        print("\nRelation Matrix:")
+        for row in self.matrix:
+            print(row)
+
+    def is_reflexive(self):
+        for i in range(self.n):
+            if self.matrix[i][i] != 1:
+                return False
+        return True
+
+    def is_symmetric(self):
+        for i in range(self.n):
+            for j in range(self.n):
+                if self.matrix[i][j] != self.matrix[j][i]:
+                    return False
+        return True
+
+    def is_antisymmetric(self):
+        for i in range(self.n):
+            for j in range(self.n):
+                if i != j and self.matrix[i][j] == 1 and self.matrix[j][i] == 1:
+                    return False
+        return True
+
+    def is_transitive(self):
+        for i in range(self.n):
+            for j in range(self.n):
+                if self.matrix[i][j] == 1:
+                    for k in range(self.n):
+                        if self.matrix[j][k] == 1 and self.matrix[i][k] != 1:
+                            return False
+        return True
+
+    def classify_relation(self):
+        reflexive = self.is_reflexive()
+        symmetric = self.is_symmetric()
+        antisymmetric = self.is_antisymmetric()
+        transitive = self.is_transitive()
+
+        print("\nProperties:")
+        print("Reflexive:", reflexive)
+        print("Symmetric:", symmetric)
+        print("Anti-symmetric:", antisymmetric)
+        print("Transitive:", transitive)
+
+        if reflexive and symmetric and transitive:
+            print("=> The relation is an **Equivalence Relation**.")
+        elif reflexive and antisymmetric and transitive:
+            print("=> The relation is a **Partial Order Relation**.")
+        else:
+            print("=> The relation is **None** of Equivalence or Partial Order.")
+
+
+# Example usage
+if __name__ == "__main__":
+    elements = input("Enter set elements (space-separated): ").split()
+    n = int(input("Enter number of relation pairs: "))
+    pairs = []
+    print("Enter relation pairs (a b):")
+    for _ in range(n):
+        a, b = input().split()
+        pairs.append((a, b))
+
+    R = RELATION(elements, pairs)
+    R.display_matrix()
+    R.classify_relation()
+
+3.
+from itertools import permutations, product
+
+def get_input_digits():
+    digits = input("Enter the digits (without space): ")
+    return list(digits)
+
+def get_length():
+    return int(input("Enter length of permutation: "))
+
+def generate_permutations(digits, length, allow_repetition):
+    if allow_repetition:
+        return list(product(digits, repeat=length))
+    else:
+        return list(permutations(digits, length))
+
+def main():
+    digits = get_input_digits()
+    length = get_length()
+    mode = input("Allow repetition? (yes/no): ").strip().lower()
+
+    allow_repetition = mode == 'yes'
+    
+    if not allow_repetition and length > len(digits):
+        print("Error: Length cannot be greater than number of digits without repetition.")
+        return
+
+    perms = generate_permutations(digits, length, allow_repetition)
+
+    print("\nGenerated Permutations:")
+    for p in perms:
+        print(''.join(p))
+
+    print(f"\nTotal permutations: {len(perms)}")
+
+if __name__ == "__main__":
+    main()
+
+4.
+def find_solutions(n, C):
+    solutions = []
+
+    def backtrack(index, current, remaining_sum):
+        if index == n:
+            if remaining_sum == 0:
+                solutions.append(current.copy())
+            return
+
+        for val in range(remaining_sum + 1):
+            current.append(val)
+            backtrack(index + 1, current, remaining_sum - val)
+            current.pop()
+
+    backtrack(0, [], C)
+    return solutions
+
+def main():
+    n = int(input("Enter the number of variables (n): "))
+    C = int(input("Enter the constant C (≤ 10): "))
+
+    if C > 10 or C < 0:
+        print("C must be between 0 and 10.")
+        return
+
+    print(f"\nSolutions to the equation x1 + x2 + ... + x{n} = {C}:\n")
+    solutions = find_solutions(n, C)
+
+    for sol in solutions:
+        print(sol)
+
+    print(f"\nTotal solutions: {len(solutions)}")
+
+if __name__ == "__main__":
+    main()
+
+5.
+def evaluate_polynomial(coeffs, n):
+    degree = len(coeffs) - 1
+    result = 0
+    for i in range(len(coeffs)):
+        result += coeffs[i] * (n ** (degree - i))
+    return result
+
+def main():
+    print("Polynomial format: a0*n^d + a1*n^(d-1) + ... + ad")
+    degree = int(input("Enter the degree of the polynomial: "))
+    
+    coeffs = []
+    print("Enter the coefficients from highest degree to constant term:")
+    for i in range(degree + 1):
+        coeff = int(input(f"Coefficient of n^{degree - i}: "))
+        coeffs.append(coeff)
+    
+    n = int(input("Enter the value of n: "))
+    value = evaluate_polynomial(coeffs, n)
+
+    print(f"\nThe polynomial evaluated at n = {n} is: {value}")
+
+if __name__ == "__main__":
+    main()
+
+6.
+def is_complete_graph(matrix):
+    n = len(matrix)
+    for i in range(n):
+        for j in range(n):
+            if i == j:
+                if matrix[i][j] != 0:  # No self-loop
+                    return False
+            else:
+                if matrix[i][j] != 1:
+                    return False
+    return True
+
+def main():
+    n = int(input("Enter the number of vertices: "))
+    
+    print("Enter the adjacency matrix (rows separated by newlines, 0 or 1 values):")
+    matrix = []
+    for i in range(n):
+        row = list(map(int, input(f"Row {i+1}: ").split()))
+        if len(row) != n:
+            print("Invalid row length. Each row must have exactly", n, "elements.")
+            return
+        matrix.append(row)
+
+    print("\nAdjacency Matrix:")
+    for row in matrix:
+        print(row)
+
+    if is_complete_graph(matrix):
+        print("\nThe graph is a COMPLETE graph.")
+    else:
+        print("\nThe graph is NOT a complete graph.")
+
+if __name__ == "__main__":
+    main()
+
+7.
+def is_complete_graph(adj_list):
+    n = len(adj_list)
+    for vertex, neighbors in adj_list.items():
+        # Each vertex should have n - 1 neighbors
+        if len(neighbors) != n - 1:
+            return False
+        # Should not contain self-loops or duplicates
+        if vertex in neighbors or len(set(neighbors)) != len(neighbors):
+            return False
+    return True
+
+def main():
+    n = int(input("Enter the number of vertices: "))
+    
+    adj_list = {}
+    print("Enter adjacency list (space-separated neighbors for each vertex):")
+    for i in range(n):
+        vertex = str(i)
+        neighbors = input(f"Neighbors of vertex {vertex}: ").split()
+        adj_list[vertex] = neighbors
+
+    print("\nAdjacency List:")
+    for v in adj_list:
+        print(f"{v}: {adj_list[v]}")
+
+    if is_complete_graph(adj_list):
+        print("\nThe graph is a COMPLETE graph.")
+    else:
+        print("\nThe graph is NOT a complete graph.")
+
+if __name__ == "__main__":
+    main()
+
+8.
+def compute_degrees(adj_list):
+    in_degree = {}
+    out_degree = {}
+
+    # Initialize degrees
+    for vertex in adj_list:
+        in_degree[vertex] = 0
+        out_degree[vertex] = len(adj_list[vertex])
+
+    # Compute in-degree
+    for vertex in adj_list:
+        for neighbor in adj_list[vertex]:
+            if neighbor in in_degree:
+                in_degree[neighbor] += 1
+            else:
+                in_degree[neighbor] = 1
+            # Ensure all vertices are in the out_degree dictionary
+            if neighbor not in out_degree:
+                out_degree[neighbor] = 0
+
+    return in_degree, out_degree
+
+def main():
+    n = int(input("Enter the number of vertices: "))
+    adj_list = {}
+
+    print("Enter adjacency list (space-separated neighbors for each vertex):")
+    for i in range(n):
+        vertex = input(f"Enter name of vertex {i+1}: ").strip()
+        neighbors = input(f"Enter neighbors of {vertex}: ").split()
+        adj_list[vertex] = neighbors
+
+    in_deg, out_deg = compute_degrees(adj_list)
+
+    print("\nVertex\tIn-Degree\tOut-Degree")
+    for vertex in adj_list:
+        print(f"{vertex}\t{in_deg.get(vertex, 0)}\t\t{out_deg.get(vertex, 0)}")
+
+if __name__ == "__main__":
+    main()
