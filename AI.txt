@@ -1,0 +1,247 @@
+/* ---------- FACTS ---------- */
+
+% Male members
+male(rahul).
+male(amit).
+male(sanjay).
+male(rohan).
+male(ankit).
+
+% Female members
+female(sunita).
+female(neeta).
+female(priya).
+female(kavita).
+female(ria).
+
+% Parent relationships
+parent(rahul, amit).    % Rahul is parent of Amit
+parent(sunita, amit).
+
+parent(rahul, priya).
+parent(sunita, priya).
+
+parent(amit, rohan).
+parent(neeta, rohan).
+
+parent(amit, ria).
+parent(neeta, ria).
+
+parent(priya, ankit).
+parent(kavita, ankit).
+
+
+/* ---------- RULES ---------- */
+
+% Father
+father(F, C) :-
+    male(F),
+    parent(F, C).
+
+% Mother
+mother(M, C) :-
+    female(M),
+    parent(M, C).
+
+% Son
+son(S, P) :-
+    male(S),
+    parent(P, S).
+
+% Daughter
+daughter(D, P) :-
+    female(D),
+    parent(P, D).
+
+% Sibling (brother or sister)
+sibling(X, Y) :-
+    parent(P, X),
+    parent(P, Y),
+    X \= Y.
+
+% Brother
+brother(B, X) :-
+    male(B),    sibling(B, X).
+
+% Sister
+sister(S, X) :-
+    female(S),
+    sibling(S, X).
+
+% Grandparent
+grandparent(GP, C) :-
+    parent(P, C),
+    parent(GP, P).
+
+% Grandfather
+grandfather(GF, C) :-
+    male(GF),
+    grandparent(GF, C).
+
+% Grandmother
+grandmother(GM, C) :-
+    female(GM),
+    grandparent(GM, C).
+
+% Uncle   brother of parent
+uncle(U, C) :-
+    brother(U, P),
+    parent(P, C).
+
+% Aunt   sister of parent
+aunt(A, C) :-
+    sister(A, P),
+    parent(P, C).
+
+% Cousins   children of siblings
+cousin(X, Y) :-
+    parent(P1, X),
+    parent(P2, Y),
+    sibling(P1, P2).
+
+2.
+% conc(L1, L2, L3)
+% L3 is the result of appending L2 at the end of L1.
+
+conc([], L, L).                % Base case: empty list appended to L gives L
+conc([H|T], L2, [H|L3]) :-     % Recursive step
+    conc(T, L2, L3).
+
+3.
+% reverse(L, R) using accumulator
+
+reverse(L, R) :-
+    reverse_acc(L, [], R).
+
+reverse_acc([], Acc, Acc).            % When input list ends, accumulator is result
+reverse_acc([H|T], Acc, R) :-
+    reverse_acc(T, [H|Acc], R).
+
+4.
+% sum(X, Y, R)
+% R is the sum of X and Y.
+
+sum(X, Y, R) :-
+    R is X + Y.
+
+5.
+% max(X, Y, M)
+% M is the maximum of X and Y.
+
+max(X, Y, X) :-
+    X >= Y.
+
+max(X, Y, Y) :-
+    Y > X.
+6.
+% factorial(N, F)
+% F is the factorial of N.
+
+% Base case
+factorial(0, 1).
+
+% Recursive case
+factorial(N, F) :-
+    N > 0,
+    N1 is N - 1,
+    factorial(N1, F1),
+    F is N * F1.
+7.
+% generate_fib(N, T)
+% T is the Nth term of the Fibonacci series.
+
+% Base cases
+generate_fib(0, 0).
+generate_fib(1, 1).
+
+% Recursive case
+generate_fib(N, T) :-
+    N > 1,
+    N1 is N - 1,
+    N2 is N - 2,
+    generate_fib(N1, T1),
+    generate_fib(N2, T2),
+    T is T1 + T2.
+8.
+% power(Num, Pow, Ans)
+% Ans is Num raised to the power Pow.
+
+% Base case: anything raised to power 0 is 1
+power(_, 0, 1).
+
+% Recursive case: Num^Pow = Num   Num^(Pow-1)
+power(Num, Pow, Ans) :-
+    Pow > 0,
+    P1 is Pow - 1,
+    power(Num, P1, Ans1),
+    Ans is Num * Ans1.
+
+9.
+% multi(N1, N2, R)
+% R is the product of N1 and N2.
+
+multi(N1, N2, R) :-
+    R is N1 * N2.
+
+10.
+% memb(X, L)
+% True if X is a member of list L
+
+memb(X, [X|_]).          % X is the head → success
+
+memb(X, [_|T]) :-        % Otherwise check the tail
+    memb(X, T).
+
+11.
+% sumlist(L, S)
+% S is the total sum of all numbers in list L.
+
+sumlist([], 0).                 % Base case: empty list → sum = 0
+sumlist([H|T], S) :-            % Recursive case
+    sumlist(T, S1),
+    S is H + S1.
+
+12.
+% A list of even length
+evenlength([]).                     % Base case: empty list has even length
+evenlength([_, _ | T]) :-           % Remove two elements and recurse
+    evenlength(T).
+
+% A list of odd length
+oddlength([_]).                     % Base case: single element list has odd length
+oddlength([_, _ | T]) :-            % Remove two elements and recurse
+    oddlength(T).
+
+13.
+% Base case: if the list has only one element, that element is the maximum.
+maxlist([X], X).
+
+% Recursive case:
+% Find the maximum of the tail, compare with the head, and return the larger one.
+maxlist([H | T], M) :-
+    maxlist(T, MaxTail),
+    ( H >= MaxTail ->
+          M = H
+    ;     M = MaxTail
+    ).
+
+14.
+% Insert element I at position 1 → simply put I at the head
+insert(I, 1, L, [I | L]).
+
+% For position N > 1:
+% Keep the head H unchanged and insert into the tail T at position N-1
+insert(I, N, [H | T], [H | R]) :-
+    N > 1,
+    N1 is N - 1,
+    insert(I, N1, T, R).
+
+15.
+% Case 1: Delete the first element (N = 1)
+delete(1, [_ | T], T).
+
+% Case 2: Delete element at position N > 1
+delete(N, [H | T], [H | R]) :-
+    N > 1,
+    N1 is N - 1,
+    delete(N1, T, R).
