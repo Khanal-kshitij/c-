@@ -1,0 +1,508 @@
+
+#include <iostream>
+#include <unistd.h>
+#include <sys/wait.h>
+using namespace std;
+
+int main() {
+    cout << "Process Control Demonstration:\n";
+    pid_t pid = fork();
+    if (pid == 0) {
+        cout << "Child process running PID: " << getpid() << endl;
+        sleep(2);
+        cout << "Child process finished.\n";
+        exit(0);
+    } else if (pid>0) {
+        cout << "Parent process running. PID: " <<getpid() << endl;
+        cout<< "waiting for the Child process to finish..." << endl;
+        wait(nullptr);
+    } else{
+        cerr << "Fork Failed." <<endl;
+        return 1;
+    }
+    cout << "Listing current processes using 'ps': \n";
+    system("ps");
+    cout << "demonstrating Kill: " <<getpid()<<"\n";
+    kill (getpid(), SIGTERM);
+}
+
+3.
+
+#include <iostream> 
+#include <unistd.h> 
+#include <sys/wait.h> 
+using namespace std; 
+
+void execute_same_program_same_code() { 
+    cout << "Executing the same program with same code.\n";} 
+void execute_same_program_different_code() { 
+    cout << "Parent is executing its task.\n"; 
+    execlp("pwd", "pwd",nullptr); 
+    perror("exec failed");} 
+
+int main() { 
+    pid_t pid = fork(); 
+    if (pid == -1) { 
+        cerr << "Fork failed!\n"; 
+        return 1;} 
+    if (pid == 0) { 
+        cout << "Child process (PID: " << getpid() << ") started.\n"; 
+        execute_same_program_same_code(); 
+        execute_same_program_different_code(); 
+    } else { 
+        cout << "Parent process (PID: " << getpid() << ") started.\n"; 
+        execute_same_program_same_code(); 
+        cout << "Parent is waiting for child to finish...\n"; 
+        wait(NULL);  
+        cout << "Child has finished. Parent is now terminating.\n";} 
+    return 0;}
+
+
+4.
+
+#include <stdio.h> 
+#include <stdlib.h> 
+#include <unistd.h>
+
+int main() { 
+printf("Kernel Version:\n"); 
+system("uname -r"); 
+printf("\nCPU Type:\n"); 
+system("uname -m"); 
+printf("\nDetailed CPU Information:\n"); 
+system("lscpu"); 
+return 0;
+}
+
+
+5.
+
+#include <iostream> 
+#include <fstream> 
+#include <string> 
+using namespace std; 
+void get_memory_info() { 
+    ifstream meminfo("/proc/meminfo"); 
+    string line; 
+    if (!meminfo.is_open()) { 
+        cerr << "Failed to open /proc/meminfo" << endl; 
+        exit(1);} 
+    cout << "\nMemory Information:\n"; 
+    while (getline(meminfo, line)) { 
+        if (line.find("MemTotal") != string::npos) { 
+            cout << line << endl;} 
+        if (line.find("MemFree") != string::npos) { 
+            cout << line << endl; } 
+        if (line.find("MemAvailable") != string::npos) { 
+            cout << line << endl;} 
+        if (line.find("Buffers") != string::npos) { 
+            cout << line << endl; } 
+        if (line.find("Cached") != string::npos) { 
+            cout << line << endl;} 
+        if (line.find("SwapTotal") != string::npos) { 
+            cout << line << endl; } 
+        if (line.find("SwapFree") != string::npos) { 
+            cout << line << endl;}} 
+    meminfo.close();} 
+int main() { 
+    cout << "Linux Kernel Memory Information:\n"; 
+    get_memory_info(); 
+    return 0;}
+
+
+6
+#include <iostream> 
+#include <fcntl.h>   
+#include <unistd.h>  
+#include <sys/types.h>  
+#include <sys/stat.h>  
+using namespace std; 
+void copy_file(const char* source, const char* destination) { 
+    int source_fd = open(source, O_RDONLY); 
+    if (source_fd == -1) { 
+        perror("Failed to open source file"); 
+        exit(1);} 
+    int dest_fd = open(destination, O_WRONLY | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR); 
+    if (dest_fd == -1) { 
+        perror("Failed to open destination file"); 
+        close(source_fd); 
+        exit(1);} 
+    char buffer[1024]; 
+    ssize_t bytes_read, bytes_written; 
+    while ((bytes_read = read(source_fd, buffer, sizeof(buffer))) > 0) { 
+        bytes_written = write(dest_fd, buffer, bytes_read); 
+        if (bytes_written != bytes_read) { 
+            perror("Error writing to destination file"); 
+            close(source_fd); 
+            close(dest_fd); 
+            exit(1);}} 
+    if (bytes_read == -1) { 
+        perror("Error reading from source file");} 
+    close(source_fd); 
+    close(dest_fd); 
+    cout << "File copied successfully from " << source << " to " << destination << endl;} 
+int main() { 
+    const char* source = "source.txt";  
+    const char* destination = "destination.txt"; 
+    copy_file(source, destination); 
+    return 0;} 
+
+7
+
+#include <iostream>
+using namespace std;
+void First_Come_First_Serve(string name_of_process[], int burst_time[], int number_of_processes) {
+    double waiting_time = 0;
+    double turnaround_time = 0;
+    double total_waiting_time = 0;
+    double total_turnaround_time = 0;
+    cout << "Name Of Process\tBurst Time\tWaiting Time\tTurnAround Time" << endl;
+    for (int i = 0; i < number_of_processes; i++) {
+        turnaround_time += burst_time[i];
+        total_turnaround_time += turnaround_time;
+        cout << name_of_process[i] << "\t\t" << burst_time[i] << "\t\t" << waiting_time << "\t\t";
+        cout<< turnaround_time << endl;
+        total_waiting_time += waiting_time;
+        waiting_time += burst_time[i];
+    }
+    cout<<"\nAverage Waiting Time is:: "<<total_waiting_time/number_of_processes<< "\nAverage TurnAround Time is::" ;
+    cout << total_turnaround_time / number_of_processes << endl;
+}
+int main() {
+    int number_of_processes;
+    cout << "Enter the number of processes: ";
+    cin >> number_of_processes;
+    string name_of_process[number_of_processes];
+    int burst_time[number_of_processes];
+    
+    for (int i = 0; i < number_of_processes; i++) {
+        cout << "Enter Name of Process:: ";
+        cin >> name_of_process[i];
+        cout << "Enter Burst Time of Process " << name_of_process[i] << ":: ";
+        cin >> burst_time[i];
+    }
+    
+    First_Come_First_Serve(name_of_process, burst_time, number_of_processes);
+    return 0;
+}
+
+8.
+
+#include <iostream>
+using namespace std;
+void First_Come_First_Serve(string name_of_process[], int burst_time[], int number_of_processes) {
+    double waiting_time = 0;
+    double turnaround_time = 0;
+    double total_waiting_time = 0;
+    double total_turnaround_time = 0;
+    cout << "Name Of Process\tBurst Time\tWaiting Time\tTurnAround Time" << endl;
+    for (int i = 0; i < number_of_processes; i++) {
+        turnaround_time += burst_time[i];
+        total_turnaround_time += turnaround_time;
+        cout << name_of_process[i] << "\t\t" << burst_time[i] << "\t\t" << waiting_time << "\t\t";
+        cout<< turnaround_time << endl;
+        total_waiting_time += waiting_time;
+        waiting_time += burst_time[i];
+    }
+    cout << "\nAverage Waiting Time is: " << total_waiting_time / number_of_processes;
+    cout << "\nAverage TurnAround Time is: " << total_turnaround_time / number_of_processes << endl;}
+void Sort(string name_of_process[], int burst_time[], int number_of_processes) {
+    for (int i = 0; i < number_of_processes; i++) {
+        for (int j = 0; j < number_of_processes; j++) {
+            if (burst_time[i] < burst_time[j]) {
+                int temp_burst = burst_time[i];
+                burst_time[i] = burst_time[j];
+                burst_time[j] = temp_burst;
+                string temp_name_of_process = name_of_process[i];
+                name_of_process[i] = name_of_process[j];
+                name_of_process[j] = temp_name_of_process;
+            }
+        }
+    }
+    First_Come_First_Serve(name_of_process, burst_time, number_of_processes);}
+int main() {
+    int number_of_processes;
+    cout << "Enter the number of processes: ";
+    cin >> number_of_processes;
+    string name_of_process[number_of_processes];
+    int burst_time[number_of_processes];
+    for (int i = 0; i < number_of_processes; i++) {
+        cout << "Enter Name of Process: ";
+        cin >> name_of_process[i];
+        cout << "Enter Burst Time of Process " << name_of_process[i] << ": ";
+        cin >> burst_time[i];
+    }
+    Sort(name_of_process, burst_time, number_of_processes);
+    return 0;
+}
+
+9
+
+#include <iostream>
+using namespace std;
+void First_Come_First_Serve(string name_of_process[], int burst_time[], int priority[], int number_of_processes) {
+    double waiting_time = 0;
+    double turnaround_time = 0;
+    double total_waiting_time = 0;
+    double total_turnaround_time = 0;
+    cout << "Name Of Process\tBurst Time\tPriority\tWaiting Time\tTurnAround Time" << endl;
+    for (int i = 0; i < number_of_processes; i++) {
+        turnaround_time += burst_time[i];
+        total_turnaround_time += turnaround_time;
+        cout << name_of_process[i] << "\t\t" << burst_time[i] << "\t\t" << priority[i]; 
+        cout << "\t\t" << waiting_time << "\t\t" << turnaround_time << endl;
+        total_waiting_time += waiting_time;
+        waiting_time += burst_time[i];}
+    cout << "\nAverage Waiting Time is: " << total_waiting_time / number_of_processes ;
+    cout << "\nAverage TurnAround Time is: " << total_turnaround_time / number_of_processes << endl;}
+void Sort(string name_of_process[], int burst_time[], int priority[], int number_of_processes) {
+    for (int i = 0; i < number_of_processes; i++) {
+        for (int j = 0; j < number_of_processes; j++) {
+            if (priority[i] < priority[j]) {
+                int temp_burst = burst_time[i];
+                burst_time[i] = burst_time[j];
+                burst_time[j] = temp_burst;
+                int temp_priority = priority[i];
+                priority[i] = priority[j];
+                priority[j] = temp_priority;
+                string temp_name_of_process = name_of_process[i];
+                name_of_process[i] = name_of_process[j];
+                name_of_process[j] = temp_name_of_process;}}}
+    First_Come_First_Serve(name_of_process, burst_time, priority, number_of_processes);}
+int main() {
+    int number_of_processes;
+    cout << "Enter the number of processes: ";
+    cin >> number_of_processes;
+    string name_of_process[number_of_processes];
+    int burst_time[number_of_processes];
+    int priority[number_of_processes];
+    for (int i = 0; i < number_of_processes; i++) {
+        cout << "Enter Name of Process: ";
+        cin >> name_of_process[i];
+        cout << "Enter Burst Time of Process " << name_of_process[i] << ": ";
+        cin >> burst_time[i];
+        cout << "Enter Priority of Process " << name_of_process[i] << ": ";
+        cin >> priority[i];}
+    Sort(name_of_process, burst_time, priority, number_of_processes);
+    return 0;}
+
+
+10
+
+#include <iostream>
+#include <algorithm>
+#include <limits>
+
+using namespace std;
+
+void display(string name_of_process[],int burst_time[],int arrival_time[],int number_of_processes,int waiting_time[],int turnaround_time[]){
+    double total_waiting_time = 0;
+    double total_turnaround_time = 0;
+
+    cout << "Name Of Process\tBurst Time\tArrival Time\tWaiting Time\tTurnAround Time" << endl;
+    for (int num = 0; num < number_of_processes; num++) {
+        total_waiting_time += waiting_time[num];
+        total_turnaround_time += turnaround_time[num];
+        cout << name_of_process[num] << "\t\t" << burst_time[num] << "\t\t" << arrival_time[num];
+        cout<< "\t\t" << waiting_time[num];
+        cout << "\t\t" << turnaround_time[num] << endl;
+    }
+    cout << "\nAverage Waiting Time is: " << total_waiting_time/number_of_processes;
+    cout << "\nAverage TurnAround Time is: ";
+    cout<< total_turnaround_time / number_of_processes << endl;
+}
+
+void shortest_remaining_time_first(string name_of_process[], int number_of_processes, int burst_time[], int arrival_time[]) {
+    int waiting_time[number_of_processes];
+    int turnaround_time[number_of_processes];
+    int remaining_time[number_of_processes];
+    copy(burst_time, burst_time + number_of_processes, remaining_time);
+
+    int clock = 0;
+    int completed = 0;
+    float min_burst = numeric_limits<float>::infinity();
+    int shortest = -1;
+    bool finished = false;
+
+    while (completed != number_of_processes) {
+        for (int num = 0; num < number_of_processes; num++) {
+            if (arrival_time[num] <= clock && remaining_time[num] < min_burst && remaining_time[num] > 0) {
+                min_burst = remaining_time[num];
+                shortest = num;
+                finished = true;
+            }
+        }
+
+        if (!finished) {
+            clock++;
+            continue;
+        }
+
+        remaining_time[shortest]--;
+        min_burst = remaining_time[shortest];
+        if (min_burst == 0) {
+            min_burst = numeric_limits<float>::infinity();
+        }
+
+        if (remaining_time[shortest] == 0) {
+            completed++;
+            finished = false;
+            int finish_time = clock + 1;
+            waiting_time[shortest] = finish_time - burst_time[shortest] - arrival_time[shortest];
+            turnaround_time[shortest] = finish_time - arrival_time[shortest];
+
+            if (waiting_time[shortest] < 0) {
+                waiting_time[shortest] = 0;
+            }
+        }
+
+        clock++;
+    }
+
+    display(name_of_process, burst_time, arrival_time, number_of_processes, waiting_time, turnaround_time);
+}
+
+int main() {
+    int number_of_processes;
+    cout << "Enter the number of processes: ";
+    cin >> number_of_processes;
+    string name_of_process[number_of_processes];
+    int burst_time[number_of_processes];
+    int arrival_time[number_of_processes];
+    for (int i = 0; i < number_of_processes; i++) {
+        cout << "Enter Name of Process: ";
+        cin >> name_of_process[i];
+        cout << "Enter Burst Time of Process " << name_of_process[i] << ": ";
+        cin >> burst_time[i];
+        cout << "Enter Arrival Time of Process " << name_of_process[i] << ": ";
+        cin >> arrival_time[i];
+    }
+
+    shortest_remaining_time_first(name_of_process, number_of_processes, burst_time, arrival_time);
+    return 0;
+}
+
+11.
+
+#include <pthread.h>
+#include <iostream>
+#include <vector>
+using namespace std;
+struct ThreadData {
+    vector<int>& arr;
+    int start;
+    int end;
+    int sum;
+};
+void* calculate_sum(void* arg) {
+    ThreadData* data = static_cast<ThreadData*>(arg);
+    data->sum = 0;
+    for (int i = data->start; i < data->end; ++i) {
+        data->sum += data->arr[i];
+    }
+    pthread_exit(nullptr);
+}
+int main() {
+    int n;
+    cout << "Enter the number of elements: ";
+    cin >> n;
+    vector<int> arr(n);
+    cout << "Enter " << n << " elements: " << endl;
+    for (int i = 0; i < n; ++i) {
+        cin >> arr[i];}
+    int mid = n / 2;
+    ThreadData data1 = {arr, 0, mid, 0};
+    ThreadData data2 = {arr, mid, n, 0};
+    pthread_t thread1, thread2;
+    pthread_create(&thread1, nullptr, calculate_sum, static_cast<void*>(&data1));
+    pthread_create(&thread2, nullptr, calculate_sum, static_cast<void*>(&data2));
+    pthread_join(thread1, nullptr);
+    pthread_join(thread2, nullptr);
+    int total_sum = data1.sum + data2.sum;
+    cout << "The sum of the numbers is: " << total_sum << endl;
+    return 0;}
+
+12.
+
+#include <iostream>
+#include <vector>
+#include <string>
+#include <sstream>
+using namespace std;
+void display(const vector<pair<string, int>>& memory) {
+    int count = 1;
+    cout << "Memory Status:" << endl;
+    for (const auto& frame : memory) {
+        cout << "Frame: " << count << " | Process: " << frame.first << " | Size: " << frame.second << endl;
+        count++;
+    }
+}
+void firstFit(int noOfFrames, vector<pair<string, int>>& memory, const pair<string, int>& process) {
+    bool flag = false;
+    for (int i = 0; i < noOfFrames; i++) {
+        if (memory[i].first == "free" && memory[i].second >= process.second) {
+            memory[i].first = process.first;
+            display(memory);
+            flag = true;
+            break;
+        }
+    }
+    if (!flag) {
+        cout << "\nYou do not have enough space to run the new process" << endl;
+    }
+}
+void bestFit(int noOfFrames, vector<pair<string, int>>& memory, const pair<string, int>& process) {
+    int flag = -1;
+    for (int i = 0; i < noOfFrames; i++) {
+        if (memory[i].first == "free" && memory[i].second >= process.second) {
+            if (flag == -1 || memory[i].second < memory[flag].second) {
+                flag = i;
+            }
+        }
+    }
+    if (flag != -1) {
+        memory[flag].first = process.first;
+        display(memory);
+    } else {
+        cout << "\nYou do not have enough space to run the new process." << endl;
+    }
+}
+
+void worstFit(int noOfFrames, vector<pair<string, int>>& memory, const pair<string, int>& process) {
+    int flag = -1;
+    for (int i = 0; i < noOfFrames; i++) {
+        if (memory[i].first == "free" && memory[i].second >= process.second) {
+            if (flag == -1 || memory[i].second > memory[flag].second) {
+                flag = i;
+            }}}
+    if (flag != -1) {
+        memory[flag].first = process.first;
+        display(memory);
+    } else {
+        cout << "\nYou do not have enough space to run the new process." << endl;}}
+int main() {
+    vector<pair<string, int>> memory;
+    while (true) {
+        cout << "Enter memory type (used/free) and value, or 'q' to quit: ";
+        string input;
+        getline(cin, input);
+        if (input == "q") {
+            break;
+        }
+        istringstream iss(input);
+        string memoryType;
+        int value;
+        iss >> memoryType >> value;
+        memory.push_back({memoryType, value});
+    }
+    cout << "Enter process name and value: ";
+    string processName;
+    int processValue;
+    cin >> processName >> processValue;
+    pair<string, int> process = {processName, processValue};
+    
+    firstFit(memory.size(), memory, process);
+    bestFit(memory.size(), memory, process);
+    worstFit(memory.size(), memory, process);
+    return 0;
+}

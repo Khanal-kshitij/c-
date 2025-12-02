@@ -1,0 +1,404 @@
+import pandas as pd
+import numpy as np
+
+# --------------------------------------------------------
+# 1. CREATE SAMPLE DATASET (similar to UCI Paper Reviews)
+# --------------------------------------------------------
+data = {
+    "paper_id": [1, 2, 3, 4, 5],
+    "reviewer_score": [8, 12, np.nan, 6, 15],   # out-of-range and missing values
+    "review_length": [150, 300, None, 50, -20],  # negative value + missing
+    "recommendation": ["accept", "Accept", "reject", "rejct", None]  # inconsistent values
+}
+
+df = pd.DataFrame(data)
+
+print("Original Dataset:")
+print(df, "\n")
+
+
+# --------------------------------------------------------
+# 2. HANDLE MISSING VALUES
+# --------------------------------------------------------
+# Numeric — replace with median
+df["reviewer_score"].fillna(df["reviewer_score"].median(), inplace=True)
+df["review_length"].fillna(df["review_length"].median(), inplace=True)
+
+# Categorical — replace with mode
+df["recommendation"].fillna(df["recommendation"].mode()[0], inplace=True)
+
+
+# --------------------------------------------------------
+# 3. FIX INCONSISTENT VALUES
+# --------------------------------------------------------
+df["recommendation"] = (
+    df["recommendation"]
+    .str.lower()
+    .str.strip()
+    .replace({"rejct": "reject"})     # correct known typo
+)
+
+
+# --------------------------------------------------------
+# 4. HANDLE OUTLIERS
+# --------------------------------------------------------
+# Assume valid reviewer_score is between 0 and 10
+df["reviewer_score"] = df["reviewer_score"].clip(0, 10)
+
+# Review length must be positive
+df["review_length"] = df["review_length"].clip(lower=1)
+
+
+# --------------------------------------------------------
+# 5. DEFINE VALIDATION RULES
+# --------------------------------------------------------
+validation_rules = {
+    "score_range": df["reviewer_score"].between(0, 10),
+    "positive_length": df["review_length"] > 0,
+    "valid_recommendation": df["recommendation"].isin(["accept", "reject"])
+}
+
+validation_df = pd.DataFrame(validation_rules)
+validation_df["row_valid"] = validation_df.all(axis=1)
+
+print("Validation Results:")
+print(validation_df, "\n")
+
+
+# --------------------------------------------------------
+# 6. FINAL CLEANED DATASET
+# --------------------------------------------------------
+print("Cleaned Dataset:")
+print(df)
+
+
+2.import pandas as pd
+import numpy as np
+from sklearn.preprocessing import StandardScaler, MinMaxScaler, Binarizer, KBinsDiscretizer
+from sklearn.preprocessing import PowerTransformer
+from sklearn.model_selection import train_test_split
+
+# ------------------------------------------------------------
+# 1. CREATE SAMPLE DATASET
+# ------------------------------------------------------------
+data = {
+    "id": [1, 2, 3, 4, 5, 6, 7, 8],
+    "age": [22, 25, 47, 52, 46, 56, 55, 60],
+    "income": [25000, 30000, 47000, 52000, 46000, 56000, 55000, 60000],
+    "score": [3.5, 4.0, 6.0, 8.5, 7.5, 9.0, 9.5, 10.0]
+}
+
+df = pd.DataFrame(data)
+
+print("Original Dataset:")
+print(df, "\n")
+
+# ------------------------------------------------------------
+# 2. STANDARDIZATION (Z-SCORE)
+# ------------------------------------------------------------
+scaler = StandardScaler()
+df["income_standardized"] = scaler.fit_transform(df[["income"]])
+
+# ------------------------------------------------------------
+# 3. NORMALIZATION (MIN-MAX)
+# ------------------------------------------------------------
+normalizer = MinMaxScaler()
+df["income_normalized"] = normalizer.fit_transform(df[["income"]])
+
+# ------------------------------------------------------------
+# 4. DATA TRANSFORMATION (POWER TRANSFORM / LOG TRANSFORM)
+# ------------------------------------------------------------
+# Power transform to make distribution more Gaussian
+pt = PowerTransformer()
+df["income_power_transformed"] = pt.fit_transform(df[["income"]])
+
+# Log transform (only for positive values)
+df["income_log"] = np.log(df["income"])
+
+# ------------------------------------------------------------
+# 5. AGGREGATION
+# ------------------------------------------------------------
+agg_result = df.groupby(pd.cut(df["age"], bins=[20, 40, 60])).agg(
+    avg_income=("income", "mean"),
+    max_score=("score", "max")
+)
+
+print("Aggregated (by age groups):")
+print(agg_result, "\n")
+
+# ------------------------------------------------------------
+# 6. DISCRETIZATION (BINNING)
+# ------------------------------------------------------------
+discretizer = KBinsDiscretizer(n_bins=3, encode="ordinal", strategy="uniform")
+df["income_binned"] = discretizer.fit_transform(df[["income"]])
+
+# ------------------------------------------------------------
+# 7. BINARIZATION
+# ------------------------------------------------------------
+# Convert score into binary (1 if above 7, else 0)
+binarizer = Binarizer(threshold=7)
+df["score_binary"] = binarizer.fit_transform(df[["score"]])
+
+# ------------------------------------------------------------
+# 8. SAMPLING
+# ------------------------------------------------------------
+# Random sampling: train-test split
+train, test = train_test_split(df, test_size=0.3, random_state=42)
+
+print("Sampled Train Set:")
+print(train, "\n")
+
+print("Sampled Test Set:")
+print(test, "\n")
+
+# ------------------------------------------------------------
+# 9. FINAL RESULT
+# ------------------------------------------------------------
+print("Final Preprocessed Dataset:")
+print(df)
+
+
+3.import pandas as pd
+from mlxtend.frequent_patterns import apriori, association_rules
+from mlxtend.data import load_dataset
+
+# ========================================================
+# 1️⃣ LOAD REAL DATASET 1: Groceries
+# ========================================================
+groceries = load_dataset('groceries')
+
+# Convert list-of-lists to one-hot encoded DataFrame
+groceries_df = pd.get_dummies(groceries.apply(pd.Series).stack()).groupby(level=0).sum()
+
+print("\n=== DATASET 1: Groceries ===")
+print(groceries_df.head())
+
+# ========================================================
+# 2️⃣ LOAD REAL DATASET 2: Simple Retail Dataset
+# ========================================================
+data = {
+    'Invoice': [1, 1, 2, 2, 3, 3],
+    'Item': ['Milk', 'Bread', 'Milk', 'Eggs', 'Bread', 'Butter']
+}
+df = pd.DataFrame(data)
+
+basket = (df.groupby(['Invoice', 'Item'])['Item']
+            .count()
+            .unstack()
+            .fillna(0)
+            .applymap(lambda x: 1 if x > 0 else 0))
+
+print("\n=== DATASET 2: Retail ===")
+print(basket.head())
+
+
+# ========================================================
+# FUNCTION TO RUN APRIORI EASILY
+# ========================================================
+def run_apriori(data, support, confidence):
+    print(f"\n=== Apriori: Support={support*100}%, Confidence={confidence*100}% ===")
+
+    # Frequent itemsets
+    freq = apriori(data, min_support=support, use_colnames=True)
+    print("\nFrequent Itemsets:")
+    print(freq)
+
+    # Rules
+    rules = association_rules(freq, metric="confidence", min_threshold=confidence)
+    
+    print("\nAssociation Rules:")
+    print(rules[['antecedents', 'consequents', 'support', 'confidence', 'lift']])
+    print(f"\nTotal Rules: {len(rules)}")
+
+    return freq, rules
+
+
+# ========================================================
+# 3️⃣ RUN BOTH CASES ON BOTH DATASETS
+# ========================================================
+
+# -------- A) support = 50%, confidence = 75% --------
+print("\n\n##### (A) SUPPORT = 50%, CONFIDENCE = 75% #####")
+run_apriori(groceries_df, 0.50, 0.75)
+run_apriori(basket, 0.50, 0.75)
+
+# -------- B) support = 60%, confidence = 60% --------
+print("\n\n##### (B) SUPPORT = 60%, CONFIDENCE = 60% #####")
+run_apriori(groceries_df, 0.60, 0.60)
+run_apriori(basket, 0.60, 0.60)
+
+
+import pandas as pd
+from sklearn.datasets import load_iris, load_wine
+from sklearn.model_selection import train_test_split, cross_validate
+from sklearn.preprocessing import StandardScaler
+from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
+from sklearn.naive_bayes import GaussianNB
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.tree import DecisionTreeClassifier
+
+# ============================================================
+# FUNCTION: Preprocessing (Standardization)
+# ============================================================
+def preprocess(X):
+    scaler = StandardScaler()
+    return scaler.fit_transform(X)
+
+# ============================================================
+# FUNCTION: Train & Evaluate (Holdout)
+# ============================================================
+def evaluate_holdout(X, y, test_size):
+    X_train, X_test, y_train, y_test = train_test_split(
+        X, y, test_size=test_size, random_state=42
+    )
+
+    models = {
+        "Naive Bayes": GaussianNB(),
+        "KNN": KNeighborsClassifier(),
+        "Decision Tree": DecisionTreeClassifier()
+    }
+
+    results = {}
+
+    for name, model in models.items():
+        model.fit(X_train, y_train)
+        y_pred = model.predict(X_test)
+
+        results[name] = {
+            "Accuracy": accuracy_score(y_test, y_pred),
+            "Precision": precision_score(y_test, y_pred, average="macro"),
+            "Recall": recall_score(y_test, y_pred, average="macro"),
+            "F1 Score": f1_score(y_test, y_pred, average="macro")
+        }
+
+    return results
+
+# ============================================================
+# FUNCTION: Train & Evaluate (Cross Validation)
+# ============================================================
+def evaluate_cv(X, y, folds):
+    models = {
+        "Naive Bayes": GaussianNB(),
+        "KNN": KNeighborsClassifier(),
+        "Decision Tree": DecisionTreeClassifier()
+    }
+
+    results = {}
+
+    scoring = ['accuracy', 'precision_macro', 'recall_macro', 'f1_macro']
+
+    for name, model in models.items():
+        scores = cross_validate(model, X, y, cv=folds, scoring=scoring)
+        results[name] = {
+            "Accuracy": scores['test_accuracy'].mean(),
+            "Precision": scores['test_precision_macro'].mean(),
+            "Recall": scores['test_recall_macro'].mean(),
+            "F1 Score": scores['test_f1_macro'].mean()
+        }
+
+    return results
+
+# ============================================================
+# FUNCTION: RUN EXPERIMENT ON ANY DATASET
+# ============================================================
+def run_experiment(dataset_name, X, y):
+    print("\n===================================================")
+    print(f"      RESULTS FOR {dataset_name.upper()} DATASET")
+    print("===================================================")
+
+    X = preprocess(X)
+
+    # ---- Holdout: 80/20 ----
+    print("\n--- HOLDOUT (80% Train, 20% Test) ---")
+    r1 = evaluate_holdout(X, y, test_size=0.20)
+    print(pd.DataFrame(r1))
+
+    # ---- Holdout: 66.6/33.3 ----
+    print("\n--- HOLDOUT (66.6% Train, 33.3% Test) ---")
+    r2 = evaluate_holdout(X, y, test_size=0.333)
+    print(pd.DataFrame(r2))
+
+    # ---- Cross Validation: 10-fold ----
+    print("\n--- CROSS VALIDATION (10-FOLD) ---")
+    r3 = evaluate_cv(X, y, folds=10)
+    print(pd.DataFrame(r3))
+
+    # ---- Cross Validation: 5-fold ----
+    print("\n--- CROSS VALIDATION (5-FOLD) ---")
+    r4 = evaluate_cv(X, y, folds=5)
+    print(pd.DataFrame(r4))
+
+
+# ============================================================
+# 1️⃣ DATASET 1: IRIS
+# ============================================================
+iris = load_iris()
+run_experiment("Iris", iris.data, iris.target)
+
+# ============================================================
+# 2️⃣ DATASET 2: WINE
+# ============================================================
+wine = load_wine()
+run_experiment("Wine", wine.data, wine.target)
+
+5.
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.cluster import KMeans
+from sklearn.datasets import make_blobs
+
+# =====================================================
+# 1️⃣ CREATE A SIMPLE DATASET (you can replace with your own)
+# =====================================================
+X, y = make_blobs(n_samples=300, centers=3, cluster_std=1.0, random_state=42)
+
+# =====================================================
+# 2️⃣ FUNCTION TO RUN K-MEANS AND TRACK MSE (INERTIA)
+# =====================================================
+def run_kmeans(X, k, max_iter):
+    print(f"\nRunning K-Means with K = {k}, max_iter = {max_iter}")
+
+    km = KMeans(n_clusters=k, max_iter=max_iter, random_state=42, n_init=1)
+    km.fit(X)
+
+    print("Final MSE (Inertia):", km.inertia_)
+    return km.inertia_, km
+
+
+# =====================================================
+# 3️⃣ FUNCTION TO PLOT MSE PER ITERATION
+# =====================================================
+def plot_mse_per_iteration(X, k):
+    inertia_list = []
+
+    # run K-Means for increasing iterations from 1 → 20
+    for i in range(1, 21):
+        km = KMeans(n_clusters=k, max_iter=i, random_state=42, n_init=1)
+        km.fit(X)
+        inertia_list.append(km.inertia_)
+
+    # plot the line graph
+    plt.plot(range(1, 21), inertia_list, marker='o')
+    plt.title(f"MSE vs Iterations (K={k})")
+    plt.xlabel("Iterations")
+    plt.ylabel("MSE (Inertia)")
+    plt.grid(True)
+    plt.show()
+
+
+# =====================================================
+# 4️⃣ RUN EXPERIMENT FOR DIFFERENT PARAMETERS
+# =====================================================
+# Example 1: K = 2
+run_kmeans(X, k=2, max_iter=10)
+
+# Example 2: K = 3 (correct number of clusters)
+run_kmeans(X, k=3, max_iter=10)
+
+# Example 3: K = 5
+run_kmeans(X, k=5, max_iter=10)
+
+# =====================================================
+# 5️⃣ PLOT MSE AFTER EACH ITERATION
+# =====================================================
+plot_mse_per_iteration(X, k=3)
