@@ -1,0 +1,157 @@
+1.
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Change Text</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+
+<body>
+
+    <p id="text">Hello Students!</p>
+    <button id="btn">Click Me</button>
+
+    <script>
+        $("#btn").click(function() {
+            $("#text").text("Text Changed!");
+            $("#text").css("color", "red");
+        });
+    </script>
+
+</body>
+</html>
+
+2.
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Selectors</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+
+<body>
+
+    <p id="p1">Using ID</p>
+    <p class="c1">Using Class</p>
+    <input type="text" name="username" placeholder="Enter name">
+
+    <button id="btn">Select</button>
+
+    <script>
+        $("#btn").click(function() {
+            $("#p1").css("color", "blue");        // ID
+            $(".c1").css("font-size", "20px");    // Class
+            $("input[name='username']").val("Hello"); // Name/Attribute
+        });
+    </script>
+
+</body>
+</html>
+
+3.
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Weekend Check</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+
+<body>
+
+    <input type="date" id="date">
+    <button id="check">Check</button>
+
+    <script>
+        $("#check").click(function() {
+            let d = new Date($("#date").val());
+            let day = d.getDay();
+
+            if(day == 0 || day == 6)
+                alert("Weekend!");
+            else
+                alert("Weekday!");
+        });
+    </script>
+
+</body>
+</html>
+
+4.
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Events</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+
+<body>
+
+    <input type="text" id="txt" placeholder="Type here"><br><br>
+    <select id="sel">
+        <option>Option 1</option>
+        <option>Option 2</option>
+    </select><br><br>
+
+    <button id="btn">Click Me</button>
+
+    <form id="form">
+        <input type="submit">
+    </form>
+
+    <script>
+        $("#txt").focus(function() {
+            alert("Textbox Focused");
+        });
+
+        $("#txt").blur(function() {
+            alert("Textbox Lost Focus");
+        });
+
+        $("#sel").change(function() {
+            alert("Selection Changed");
+        });
+
+        $("#btn").click(function() {
+            alert("Button Clicked");
+        });
+
+        $("#btn").dblclick(function() {
+            alert("Button Double Clicked");
+        });
+
+        $("#form").submit(function() {
+            alert("Form Submitted");
+        });
+    </script>
+
+</body>
+</html>
+
+5.
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Mouse Events</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+
+<body style="background-color:red;">
+
+    <a href="https://www.yourcollegewebsite.com" id="link">
+        It shows the mouse events
+    </a>
+
+    <script>
+        $("#link").mouseover(function() {
+            $("body").css("background-color", "green");
+            $(this).text("I'm green now");
+        });
+
+        $("#link").mouseout(function() {
+            $("body").css("background-color", "red");
+            $(this).text("I'm red now");
+        });
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,313 @@
+1.
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Formatting Example</title>
+</head>
+
+<body bgcolor="lightblue">
+
+    <h1>Welcome to HTML Formatting</h1>
+
+    <p>This is a <b>bold</b> text.</p>
+    <p>This is an <i>italic</i> text.</p>
+    <p>This is an <u>underlined</u> text.</p>
+
+    <p style="color:red;">This text is red in color.</p>
+
+    <font face="Arial" size="4">This is custom font and size</font>
+
+    <p>This is a paragraph.<br>This is next line using line break.</p>
+
+    <hr>
+
+    <marquee>This is moving text (marquee)</marquee>
+
+</body>
+</html>
+
+2.
+<!DOCTYPE html>
+<html>
+<head>
+    <title>List Example</title>
+</head>
+
+<body>
+
+    <h2>Ordered List</h2>
+    <ol>
+        <li>Apple</li>
+        <li>Banana</li>
+        <li>Mango</li>
+    </ol>
+
+    <h2>Unordered List</h2>
+    <ul>
+        <li>Car</li>
+        <li>Bike</li>
+        <li>Bus</li>
+    </ul>
+
+</body>
+</html>
+
+3.
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Images Example</title>
+</head>
+
+<body>
+
+    <h2>Image as Logo</h2>
+    <img src="logo.png" width="100" height="100">
+
+    <h2>Image inside Table</h2>
+    <table border="1">
+        <tr>
+            <th>Item</th>
+            <th>Image</th>
+        </tr>
+        <tr>
+            <td>Apple</td>
+            <td><img src="apple.jpg" width="50"></td>
+        </tr>
+    </table>
+
+    <h2>Clickable Image</h2>
+    <a href="https://www.google.com">
+        <img src="google.png" width="100">
+    </a>
+
+    <h2>Table with Background Image</h2>
+    <table border="1" background="bg.jpg">
+        <tr>
+            <td>Data 1</td>
+            <td>Data 2</td>
+        </tr>
+    </table>
+
+</body>
+</html>
+
+4.
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Links Example</title>
+</head>
+
+<body>
+
+    <h2>External Link</h2>
+    <a href="https://www.google.com">Go to Google</a>
+
+    <h2>Internal Link</h2>
+    <a href="#section2">Go to Section 2</a>
+
+    <h3 id="section2">Section 2</h3>
+    <p>This is internal linked section.</p>
+
+</body>
+</html>
+
+
+5.
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Table Example</title>
+</head>
+
+<body bgcolor="lightgrey">
+
+    <h2 align="center" style="color:blue;">Table Example</h2>
+    <hr color="brown" size="5" width="60%">
+
+    <table border="3" align="center" cellpadding="10" cellspacing="5" bgcolor="white">
+
+        <!-- Seminar Heading -->
+        <tr bgcolor="yellow">
+            <th colspan="4">Seminar</th>
+        </tr>
+
+        <!-- Schedule Heading -->
+        <tr bgcolor="yellow">
+            <th rowspan="2">Day</th>
+            <th colspan="2">Schedule</th>
+            <th rowspan="2">Topic</th>
+        </tr>
+
+        <tr bgcolor="yellow">
+            <th>Start Time</th>
+            <th>End Time</th>
+        </tr>
+
+        <!-- Monday -->
+        <tr>
+            <td rowspan="2">Monday</td>
+            <td rowspan="2">8:00 AM</td>
+            <td rowspan="2">5:00 PM</td>
+            <td>Introduction to HTML</td>
+        </tr>
+        <tr>
+            <td>Important HTML Tags</td>
+        </tr>
+
+        <!-- Tuesday -->
+        <tr>
+            <td rowspan="3">Tuesday</td>
+            <td>8:00 AM</td>
+            <td>11:00 AM</td>
+            <td rowspan="2">CSS-1</td>
+        </tr>
+        <tr>
+            <td>11:00 AM</td>
+            <td>2:00 PM</td>
+        </tr>
+        <tr>
+            <td>2:00 PM</td>
+            <td>5:00 PM</td>
+            <td>JavaScript-1</td>
+        </tr>
+
+        <!-- Wednesday -->
+        <tr>
+            <td>Wednesday</td>
+            <td>8:00 AM</td>
+            <td>12 Noon</td>
+            <td>JavaScript-2</td>
+        </tr>
+
+        <!-- Thursday -->
+        <tr>
+            <td rowspan="2">Thursday</td>
+            <td>8:00 AM</td>
+            <td>12 Noon</td>
+            <td>JQuery</td>
+        </tr>
+        <tr>
+            <td>1:00 PM</td>
+            <td>3:00 PM</td>
+            <td>Valedictory</td>
+        </tr>
+
+    </table>
+
+</body>
+</html>
+
+6.
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Semantic Tags Example</title>
+</head>
+
+<body>
+
+    <!-- Header -->
+    <header style="background-color: lightblue; padding: 10px;">
+        <h1>My Website</h1>
+        <p>Welcome to my webpage</p>
+    </header>
+
+    <!-- Navigation -->
+    <nav style="background-color: lightgray; padding: 10px;">
+        <a href="#">Home</a> |
+        <a href="#">About</a> |
+        <a href="#">Contact</a>
+    </nav>
+
+    <!-- Main Content -->
+    <main>
+
+        <!-- Section -->
+        <section>
+            <h2>About HTML</h2>
+            <p>HTML is used to create webpages.</p>
+        </section>
+
+        <!-- Another Section -->
+        <section>
+            <h2>More Info</h2>
+
+            <!-- Details and Summary -->
+            <details>
+                <summary>Click to learn more</summary>
+                <p>HTML stands for HyperText Markup Language.</p>
+            </details>
+        </section>
+
+        <!-- Figure -->
+        <figure>
+            <img src="sample.jpg" width="200">
+            <figcaption>This is a sample image</figcaption>
+        </figure>
+
+    </main>
+
+    <!-- Footer -->
+    <footer style="background-color: lightblue; padding: 10px; text-align: center;">
+        <p>© 2026 My Website</p>
+    </footer>
+
+</body>
+</html>
+
+7.
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Student Registration Form</title>
+</head>
+
+<body>
+
+    <h2 align="center">Student Registration Form</h2>
+
+    <form onsubmit="showMessage()">
+
+        <!-- Text Box -->
+        Name: <br>
+        <input type="text" name="name"><br><br>
+
+        <!-- Text Area -->
+        Address: <br>
+        <textarea rows="4" cols="30"></textarea><br><br>
+
+        <!-- Dropdown -->
+        Course: <br>
+        <select>
+            <option>BCA</option>
+            <option>BBA</option>
+            <option>B.Tech</option>
+        </select><br><br>
+
+        <!-- Radio Buttons -->
+        Gender: <br>
+        <input type="radio" name="gender"> Male
+        <input type="radio" name="gender"> Female<br><br>
+
+        <!-- Checkboxes -->
+        Hobbies: <br>
+        <input type="checkbox"> Reading
+        <input type="checkbox"> Sports
+        <input type="checkbox"> Music<br><br>
+
+        <!-- Buttons -->
+        <input type="submit" value="Submit">
+        <input type="reset" value="Reset">
+
+    </form>
+
+    <script>
+        function showMessage() {
+            alert("Form submitted");
+        }
+    </script>
+
+</body>
+</html>
